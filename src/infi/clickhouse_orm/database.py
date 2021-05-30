@@ -97,6 +97,7 @@ class Database(object):
         - `verify_ssl_cert`: whether to verify the server's certificate when connecting via HTTPS.
         - `log_statements`: when True, all database statements are logged.
         '''
+        print("THIS IS CUSTOM VERSION OF LIB")
         self.db_name = db_name
         self.db_url = db_url
         self.readonly = False
