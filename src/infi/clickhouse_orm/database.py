@@ -110,7 +110,7 @@ class Database(object):
         self.log_statements = log_statements
         self.settings = {}
         self.clickhouse_auth_dict = clickhouse_auth_dict
-        self.verify = verify_crt_path
+        self.verify_crt_path = verify_crt_path
         self.db_exists = False # this is required before running _is_existing_database
         self.db_exists = self._is_existing_database()
         if readonly:
@@ -370,7 +370,7 @@ class Database(object):
         params = self._build_params(settings)
         r = self.request_session.post(self.db_url, params=params, data=data, stream=stream,
                                       timeout=self.timeout, headers=self.clickhouse_auth_dict,
-                                      verify=self.verify_cert_path)
+                                      verify=self.verify_crt_path)
         if r.status_code != 200:
             raise ServerError(r.text)
         return r
