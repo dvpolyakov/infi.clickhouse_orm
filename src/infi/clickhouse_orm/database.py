@@ -82,7 +82,8 @@ class Database(object):
 
     def __init__(self, db_name, db_url='http://localhost:8123/',
                  username=None, password=None, readonly=False, autocreate=True,
-                 timeout=60, verify_ssl_cert=True, log_statements=False):
+                 timeout=60, verify_ssl_cert=True, log_statements=False,
+                 clickhouse_auth_dict=None, verify_crt_path=None):
         '''
         Initializes a database instance. Unless it's readonly, the database will be
         created on the ClickHouse server if it does not already exist.
@@ -108,6 +109,8 @@ class Database(object):
             self.request_session.auth = (username, password or '')
         self.log_statements = log_statements
         self.settings = {}
+        self.clickhouse_auth_dict = clickhouse_auth_dict
+        self.verify = verify_crt_path
         self.db_exists = False # this is required before running _is_existing_database
         self.db_exists = self._is_existing_database()
         if readonly:
@@ -365,7 +368,9 @@ class Database(object):
             if self.log_statements:
                 logger.info(data)
         params = self._build_params(settings)
-        r = self.request_session.post(self.db_url, params=params, data=data, stream=stream, timeout=self.timeout)
+        r = self.request_session.post(self.db_url, params=params, data=data, stream=stream,
+                                      timeout=self.timeout, headers=self.clickhouse_auth_dict,
+                                      verify=self.verify_cert_path)
         if r.status_code != 200:
             raise ServerError(r.text)
         return r
